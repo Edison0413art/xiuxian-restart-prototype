@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges">
+<!-- 仙鹤 -->
+<!-- body -->
+<rect x="12" y="14" width="8" height="6" fill="#f5f5f5"/>
+<rect x="11" y="15" width="1" height="4" fill="#dedede"/>
+<rect x="20" y="15" width="1" height="4" fill="#dedede"/>
+<!-- head -->
+<rect x="20" y="8" width="3" height="3" fill="#f5f5f5"/>
+<rect x="22" y="6" width="2" height="2" fill="#f5f5f5"/>
+<!-- red crown -->
+<rect x="22" y="5" width="2" height="1" fill="#d33d3d"/>
+<rect x="23" y="4" width="1" height="1" fill="#d33d3d"/>
+<!-- neck -->
+<rect x="19" y="11" width="2" height="4" fill="#f5f5f5"/>
+<!-- beak -->
+<rect x="24" y="7" width="2" height="1" fill="#f2b544"/>
+<rect x="25" y="6" width="2" height="1" fill="#f2b544"/>
+<!-- legs -->
+<rect x="14" y="20" width="1" height="6" fill="#3a3a3a"/>
+<rect x="17" y="20" width="1" height="6" fill="#3a3a3a"/>
+<rect x="13" y="26" width="3" height="1" fill="#3a3a3a"/>
+<rect x="16" y="26" width="3" height="1" fill="#3a3a3a"/>
+<!-- tail feathers black -->
+<rect x="9" y="15" width="3" height="4" fill="#2a2a2a"/>
+<rect x="8" y="16" width="1" height="2" fill="#2a2a2a"/>
+<!-- wing accent -->
+<rect x="14" y="15" width="3" height="2" fill="#2a2a2a"/>
+</svg>

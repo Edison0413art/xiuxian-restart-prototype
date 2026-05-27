@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges">
+<!-- 卷轴 -->
+<rect x="4" y="6" width="24" height="2" fill="#5a3220"/>
+<rect x="4" y="24" width="24" height="2" fill="#5a3220"/>
+<rect x="3" y="8" width="2" height="16" fill="#8b5a35"/>
+<rect x="27" y="8" width="2" height="16" fill="#8b5a35"/>
+<rect x="2" y="6" width="2" height="20" fill="#a87a4a"/>
+<rect x="28" y="6" width="2" height="20" fill="#a87a4a"/>
+<!-- paper -->
+<rect x="5" y="8" width="22" height="16" fill="#f4e2a8"/>
+<!-- inscription lines -->
+<rect x="8" y="11" width="2" height="10" fill="#3a2a18"/>
+<rect x="12" y="11" width="2" height="10" fill="#3a2a18"/>
+<rect x="16" y="11" width="2" height="10" fill="#3a2a18"/>
+<rect x="20" y="11" width="2" height="10" fill="#3a2a18"/>
+<rect x="24" y="11" width="2" height="10" fill="#3a2a18"/>
+<!-- red seal -->
+<rect x="22" y="18" width="3" height="3" fill="#d33d3d"/>
+</svg>
