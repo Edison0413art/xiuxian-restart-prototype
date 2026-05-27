@@ -829,6 +829,69 @@
       ],
     },
 
+    // ============ 左韩天尊高光主线（所有玩家都能见，4 条递进）============
+    {
+      id: "main:zh_shadow", tier: "main", title: "黑影",
+      intro: "你十岁那年的清晨，全村人都看见东边山头上站着一个黑色身影。所有人都不敢出声。三个时辰后他不见了，但你的鸡都吓得不下蛋。",
+      requires: { ageMin: 8, ageMax: 14 }, once: true,
+      options: [
+        { label: "把这事忘了", result: "你装作无事发生。后来你发现，整村人都假装什么都没看见——但每个人床头多了一张写着「勿念」的纸。", effects: { insight: 2, luck: 1 }, sets: ["zh_shadow_denied", "zh_witnessed"] },
+        { label: "记住他的样子", result: "你画了一张草图藏在枕头底下。当晚你做梦梦见他朝你笑。从此你睡眠不好。", effects: { insight: 5, attention: 2 }, sets: ["zh_shadow_remembered", "zh_witnessed"] },
+        { label: "跑去找他", result: "你翻山越岭跑过去。到山顶时只有一双脚印，深陷岩石半寸。你照着脚印站了一下——比你大三号。", effects: { body: 1, insight: 6, attention: 4, luck: -1 }, sets: ["zh_shadow_chased", "zh_witnessed"] },
+      ],
+    },
+    {
+      id: "main:zh_rumor_wave", tier: "main", title: "三界谣言",
+      intro: "你已是炼气修士。这一年整个修真界都在传一句话：「左韩天尊昨夜没睡好。」没人知道是什么意思，但所有大宗门都关山门了三天。",
+      requires: { ageMin: 20, ageMax: 60, realmMin: 1, flags: ["zh_witnessed"] }, once: true,
+      options: [
+        { label: "跟着关门躲三天", result: "你蹲在自家门后听外面动静。三天后世界恢复正常，但你听邻村损失了三十口人。", effects: { luck: 4, insight: 3 }, sets: ["zh_hid_safe"] },
+        { label: "出门看热闹", result: "你出门转了一圈，看见街上散落着碎成两半的玉佩。没尸体。回家时你手里多了半块。", effects: { stones: 8, attention: 3, insight: 4 }, sets: ["zh_collected_relic"] },
+        { label: "对天大喊我不怕", result: "你站在屋顶喊：左韩你来啊！整条街的窗都关了。当晚下雨，雨水有点咸——像眼泪。", effects: { fame: 6, attention: 8, luck: -3 }, sets: ["zh_taunted"] },
+      ],
+    },
+    {
+      id: "main:zh_real_glimpse", tier: "main", title: "他真的来了",
+      intro: "你修为筑基那夜，雷劫将至。雷劫前一刻，你抬头看见云上有个人，背对着你，正在看远方。你认得那个背影。",
+      requires: { ageMin: 50, ageMax: 200, realmMin: 2, flags: ["zh_shadow_denied", "zh_shadow_remembered", "zh_shadow_chased"], anyFlag: true }, once: true,
+      options: [
+        { label: "默默渡劫，不打扰他", result: "你硬着头皮把雷劫渡了。他全程没转头。最后一道雷下来时，你感觉那道雷比应该的轻了几分。", effects: { cultivation: 25, body: -3, insight: 8, luck: 5 }, sets: ["zh_quiet_pass"] },
+        { label: "对他拱手", result: "你顶着雷劫朝他遥遥行了一礼。他没回头，但抬了抬手，雷劫散了一半。", effects: { cultivation: 20, fame: 4, attention: 2, luck: 8 }, sets: ["zh_respect_paid"] },
+        { label: "想都不想冲过去", result: "你直接弃了雷劫往他飞。还没到云上，你就被雷劈成了焦炭。他这才回头，叹了一声。", effects: {}, sets: ["zh_fool_rushed"], triggersDeath: { reason: "弃劫追左韩", text: "你冲向云端，被天劫先一步带走。左韩天尊低头看了一眼你的尸体，留下一句：可惜了。", kind: "zuohan" } },
+      ],
+    },
+    {
+      id: "main:zh_face_to_face", tier: "main", title: "他坐到了你对面",
+      intro: "金丹宴上你独自喝酒。一抬头，对面坐了一个穿黑袍的人。他给自己倒了一杯，敬你。整个酒楼鸦雀无声。你认得这张脸——你画过。",
+      requires: { ageMin: 100, ageMax: 400, realmMin: 3, flags: ["zh_quiet_pass", "zh_respect_paid"], anyFlag: true }, once: true,
+      options: [
+        { label: "陪他喝一杯", result: "你举杯，他举杯，没说话。第三杯下去他笑了：你比我想的有趣。他付完账走了，留下半壶酒。你后来花了三百年才喝完。", effects: { cultivation: 30, insight: 12, fame: 15, attention: 3 }, sets: ["zh_drank_with"] },
+        { label: "起身就跑", result: "你头也不回往外冲。背后传来他的笑声：跑吧，反正下次见面是飞升。你回头一看，桌上多了张纸条：「七百年后等你。」", effects: { luck: 8, attention: 5 }, sets: ["zh_fled_dinner"] },
+        { label: "问他到底想干什么", result: "你开口问。他沉默良久，说：「我也忘了。」 然后消失。从此你修行多了一种说不清的孤独感。", effects: { insight: 20, cultivation: 10, attention: -5 }, sets: ["zh_understood_him"] },
+      ],
+    },
+
+    // ============ 因果链主线（早年小事的回响）============
+    {
+      id: "main:karma_old_man", tier: "main", title: "故人回礼",
+      intro: "你在金丹大会被围攻。眼看要被打死，一个穿白衣的老者从天而降，三招打退所有敌人。他看你一眼：「还记得我吗？当年你帮我提过包袱。」",
+      requires: { ageMin: 80, realmMin: 3, flags: ["helped_oldman"] }, once: true,
+      options: [
+        { label: "千恩万谢", result: "老者笑笑，留下一卷功法走了。这卷功法后来支撑你冲化神。", effects: { cultivation: 35, fame: 8, luck: 6 }, sets: ["karma_returned"] },
+        { label: "拜他为师", result: "你跪下要拜师。他扶你起来：「你已经过了拜师的年纪，但我可以做你的道友。」 从此你多了一个化神级靠山。", effects: { cultivation: 25, fame: 15, luck: 8 }, sets: ["karma_brother"] },
+      ],
+    },
+    {
+      id: "main:karma_robbed_revenge", tier: "main", title: "因果反噬",
+      intro: "你飞升前一夜，门口来了一个熟人——当年你抢过包袱的那个老者。他这次不是来要回包袱的，他是来确认你最后一刻的表情的。",
+      requires: { ageMin: 200, realmMin: 4, flags: ["robbed_oldman"] }, once: true,
+      options: [
+        { label: "下跪求饶", result: "他笑了笑：「你不用跪，我只是来看看。」 然后他在你飞升的瞬间，伸手按下了你头顶。你从此再没飞升过。", effects: { body: -8, attention: 5 }, sets: ["karma_punished"], triggersDeath: { reason: "因果反噬", text: "你抢过的那个老者，在你飞升前夜按住了你。你以为是夺舍，其实是判决。", kind: "zuohan" } },
+        { label: "把当年抢的还给他", result: "你从储物袋里翻出当年那个包袱原封不动。他愣了：「你留了这么多年？」 然后他叹气，让开了路。你飞升时听见他在后面说：「算了。」", effects: { luck: 10, insight: 8 }, sets: ["karma_redeemed"] },
+        { label: "拼一个", result: "你出手了。他比当年强了一万倍。你被一指点死，飞升通道也碎了。", effects: {}, sets: ["karma_destroyed"], triggersDeath: { reason: "因果反噬", text: "当年你抢的那个老者，是隐世大能。这一指，你修行三百年化为尘土。", kind: "death" } },
+      ],
+    },
+
     // ============ 苟道线（t007）支线 ============
     {
       id: "side:survivor:1", tier: "side", title: "幼年躲祸",
@@ -1705,6 +1768,18 @@
     if (event.character) rememberCharacter(event.character);
     if (event.route) advanceRoute(event.route);
     if (event.leftHanTier) recordLeftHan(event.leftHanTier);
+    // 自动 flag：水文事件按分类 set flag，让后续主线读取（早期选择影响晚期）
+    const AUTO_FLAGS = {
+      artifact: "fc_artifact",   // 接触过法宝
+      cameo: "fc_cameo",          // 见过小说主角
+      crossover: "fc_crossover",  // 经历串台
+      golden: "fc_golden_event",  // 金丹期事件
+      nascent: "fc_nascent_event",// 元婴期事件
+      zuohan: "fc_zuohan_event",  // 左韩相关事件
+      death: "fc_brushed_death",  // 接触过死亡边缘
+    };
+    if (AUTO_FLAGS[event.category]) state.flags[AUTO_FLAGS[event.category]] = true;
+    if (event.leftHanTier?.id === "body") state.flags.fc_zuohan_witness = true;
     applyEffects(event.effects, true);
     state.lastResult = {
       title: event.title,
@@ -2454,7 +2529,7 @@
     if (kind === "ascension" || endingKind === "ascension") return cycleEndingByKind("ascension");
     if (kind === "age" && state.realm >= 5) return cycleEndingByKind("ascension");
 
-    // 隐藏结局：7 条触发路径
+    // 隐藏结局：11 条触发路径（含早期 flag 因果）
     const hiddenTriggers = [
       state.stats.breakthroughs >= 7,
       state.attrs.beauty >= 18 && state.age >= 100,
@@ -2463,6 +2538,14 @@
       state.attention >= 30 && state.alive,
       state.tags.includes("霸总文") && state.tags.includes("重生文") && state.tags.includes("番茄流"),
       state.attention >= 18 && state.attrs.luck <= -2 && state.age >= 80,
+      // 因果隐藏：童年见过左韩 + 飞升前还活着
+      state.flags.zh_witnessed && state.realm >= 5,
+      // 喝过左韩的酒 = 隐藏
+      state.flags.zh_drank_with,
+      // 早年因果回响 = 隐藏
+      state.flags.karma_redeemed || state.flags.karma_brother,
+      // 戒指反向收编 + 飞升序章 = 隐藏
+      state.flags.ring_enslaved && state.stats.ascensionStage >= 2,
     ];
     if (hiddenTriggers.some(Boolean)) return cycleEndingByKind("hidden");
 
@@ -2879,11 +2962,19 @@
       "左韩天尊路过得很轻，你死得很重。",
       "左韩天尊只是抬了抬眼，你就被抬走了。",
       "你不是被打死的，你是被注视死的。",
-      "左韩天尊问了一句这是谁，你就再也回答不了了。",
+      "左韩天尊问了一句「这是谁」，你就再也回答不了了。",
       "左韩天尊伸了个懒腰，你被打散在空气里。",
       "你和左韩天尊只擦了半个肩，结果是另外那一半没保住。",
       "他没看你，但他经过的那阵风看了你。",
       "你以为自己藏得很好，左韩天尊默默给小地图加了标记。",
+      "左韩天尊打了个喷嚏，你这一片山头都重新洗牌了。",
+      "左韩天尊：「你叫啥来着？」你：「死。」",
+      "你冲他大喊：「老子不怕你！」他点头：「不怕就好。」然后你不见了。",
+      "左韩天尊翻了下你的人物档案，叹气：「这页删了吧。」",
+      "你和左韩天尊隔着三千里对视。你输了。",
+      "你给左韩天尊发了个表情包，他回复 666。但你已经不在了。",
+      "左韩天尊路过时鞋带松了，蹲下系鞋带的瞬间踩平了你。",
+      "你听见左韩天尊小声哼歌。歌词大意是：欢迎来到我的删除列表。",
     ],
     artifact: [
       "法宝认主失败，改成认你为材料。",
