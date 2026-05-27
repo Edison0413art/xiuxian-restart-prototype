@@ -151,6 +151,68 @@
   // 会话级结局抽中次数：让稀有结局在多局后必然轮到
   const endingPickCounts = {};
 
+  // 成就系统：跨局解锁，存 localStorage
+  const ACHIEVEMENTS = [
+    { id: "first_run",       icon: "🎯", name: "初入修真",     desc: "完成第一局" },
+    { id: "millennium",      icon: "🧙", name: "千年老怪",     desc: "单局活过 1000 岁" },
+    { id: "ascend",          icon: "✨", name: "羽化登仙",     desc: "成功飞升" },
+    { id: "all_mains",       icon: "📜", name: "主线收藏家",   desc: "单局触发 12+ 主线事件" },
+    { id: "pure_filler",     icon: "🍃", name: "纯水文修士",   desc: "0 主线事件 活到 80 岁" },
+    { id: "cameo_5",         icon: "🎭", name: "诸天打卡党",   desc: "单局遇到 4+ 动漫客串" },
+    { id: "zh_glimpse",      icon: "👁", name: "左韩注视者",   desc: "左韩本体路过 1 次仍活着" },
+    { id: "drank_with_zh",   icon: "🍷", name: "与天尊共饮",   desc: "解锁'他坐到了你对面'选项" },
+    { id: "savior_used",     icon: "⚡", name: "命悬一线",     desc: "靠救命手段挽回一次死亡" },
+    { id: "hidden_ending",   icon: "🌌", name: "隐藏揭秘者",   desc: "触发任一隐藏结局" },
+    { id: "endings_30",      icon: "📚", name: "结局图鉴 30",  desc: "累计解锁 30 个不同结局" },
+    { id: "endings_100",     icon: "🏛", name: "结局图鉴 100", desc: "累计解锁 100 个不同结局" },
+    { id: "die_zh",          icon: "💀", name: "天尊点名",     desc: "死于左韩天尊之手" },
+    { id: "no_breakthrough", icon: "🏔", name: "凡人到老",     desc: "0 突破 活到 80 岁" },
+  ];
+
+  function loadAchievements() {
+    try { return JSON.parse(localStorage.getItem("xx_achievements") || "{}"); }
+    catch (_) { return {}; }
+  }
+  function saveAchievements(obj) {
+    try { localStorage.setItem("xx_achievements", JSON.stringify(obj)); } catch (_) {}
+  }
+  function checkAchievements() {
+    const unlocked = loadAchievements();
+    const newly = [];
+    const mainCount = (state.highlights || []).filter(h => h.kind === "main").length;
+    const cameoCount = (state.highlights || []).filter(h => h.kind === "cameo").length;
+    const usedSaviorTotal = Object.values(state.stats.usedSaviors || {}).reduce((a,b)=>a+b,0);
+    const allEndings = sessionCatalog.endings.length;
+    const ascendNames = new Set(["飞升成功但没完全成功","天门打卡","渡劫赢家","三界破鼎者","天道面试通过","羽化登仙","天门保安通融","雷劫优等生","飞升序章圆满","天道编外人员"]);
+    const hiddenNames = new Set(["质疑天道成为天道","短剧五秒飞升","霸总误入修仙界","电子榨菜仙尊","尊嘟假嘟大帝","AI 味太冲尊者","降本增笑天尊","情绪价值仙人","助我破鼎大帝","已读乱回真君"]);
+    const e = state.ending?.name || "";
+
+    const checks = [
+      ["first_run", true],
+      ["millennium", state.age >= 1000],
+      ["ascend", ascendNames.has(e)],
+      ["all_mains", mainCount >= 12],
+      ["pure_filler", mainCount === 0 && state.age >= 80],
+      ["cameo_5", cameoCount >= 4],
+      ["zh_glimpse", state.stats.leftHanBody >= 1 && state.alive === false && state.deathKind !== "zuohan"],
+      ["drank_with_zh", state.flags?.zh_drank_with],
+      ["savior_used", usedSaviorTotal > 0],
+      ["hidden_ending", hiddenNames.has(e)],
+      ["endings_30", allEndings >= 30],
+      ["endings_100", allEndings >= 100],
+      ["die_zh", state.deathKind === "zuohan"],
+      ["no_breakthrough", state.stats.breakthroughs === 0 && state.age >= 80],
+    ];
+    checks.forEach(([id, cond]) => {
+      if (cond && !unlocked[id]) {
+        unlocked[id] = Date.now();
+        newly.push(id);
+      }
+    });
+    saveAchievements(unlocked);
+    return { unlocked, newly };
+  }
+
   const ATTR_PRESETS = [
     { id: "survivor", name: "苟道流", attrs: { root: 2, insight: 3, body: 5, wealth: 2, luck: 6, beauty: 2 } },
     { id: "root",     name: "灵根流", attrs: { root: 8, insight: 5, body: 3, wealth: 1, luck: 2, beauty: 1 } },
@@ -1575,6 +1637,7 @@
         <h2 class="panel-title">本局达成标签</h2>
         <div class="tag-list">${summaryTags().map((tag) => `<span class="tag ${tagClass(tag)}">${escapeHtml(tag)}</span>`).join("")}</div>
       </section>
+      ${achievementsPanel()}
       ${catalogPanel()}
       ${npcsPanel()}
       ${missedRoutesPanel()}
@@ -1624,6 +1687,30 @@
         </div>
         <button class="primary share-poster-btn" data-action="generate-poster">📸 生成战报海报</button>
         <div id="posterOutput"></div>
+      </section>
+    `;
+  }
+
+  function achievementsPanel() {
+    const { unlocked, newly } = checkAchievements();
+    const total = ACHIEVEMENTS.length;
+    const got = ACHIEVEMENTS.filter(a => unlocked[a.id]).length;
+    return `
+      <section class="panel achievements-panel">
+        <h2 class="panel-title">🏆 成就墙 ${got}/${total}</h2>
+        ${newly.length ? `<div class="achievement-new">✨ 本局新解锁：${newly.map(id => {
+          const a = ACHIEVEMENTS.find(x=>x.id===id);
+          return `<strong>${a.icon} ${escapeHtml(a.name)}</strong>`;
+        }).join(" · ")}</div>` : ""}
+        <div class="achievement-grid">
+          ${ACHIEVEMENTS.map(a => `
+            <div class="achievement-item ${unlocked[a.id] ? "got" : "locked"}" title="${escapeHtml(a.desc)}">
+              <span class="ach-icon">${unlocked[a.id] ? a.icon : "🔒"}</span>
+              <span class="ach-name">${escapeHtml(a.name)}</span>
+              <span class="ach-desc">${escapeHtml(a.desc)}</span>
+            </div>
+          `).join("")}
+        </div>
       </section>
     `;
   }
@@ -2236,6 +2323,21 @@
     if (event.category === "finale" && state.realm >= 5) weight += 30;
     if (event.category === "nascent" && state.realm >= 4) weight += 20;
     if (event.category === "golden" && state.realm >= 3) weight += 18;
+    // 属性门控：高灵根 → 修真事件更易出，低灵根 → 凡人事件更易出
+    if (event.category === "qi" || event.category === "foundation") {
+      weight += Math.max(0, state.attrs.root - 4) * 2;
+    }
+    if (event.category === "mortal") {
+      weight += Math.max(0, 5 - state.attrs.root) * 3;
+    }
+    // 高颜值 → cameo/crossover 更易；低颜值 → 死亡更易
+    if (event.category === "cameo" || event.category === "crossover") {
+      weight += Math.max(0, state.attrs.beauty - 5) * 1.5;
+    }
+    // 高家底 → artifact 更易
+    if (event.category === "artifact") {
+      weight += Math.max(0, state.attrs.wealth - 5) * 2;
+    }
     return Math.max(0.2, weight);
   }
 
