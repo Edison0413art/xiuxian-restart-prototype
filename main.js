@@ -1239,6 +1239,7 @@
       activeFated: null,
       epitaph: "",
       lastNarration: "",
+      highlights: [], // 本局高光时刻 [{kind, text, age}]
       stats: {
         leftHanCount: 0,
         leftHanRumors: 0,
@@ -1479,6 +1480,7 @@
         ${compareCard()}
       </section>
       ${battleReportPanel()}
+      ${highlightsPanel()}
       ${statusPanel()}
       <section class="panel">
         <h2 class="panel-title">本局达成标签</h2>
@@ -1511,6 +1513,28 @@
           <div><b>结局</b><span>${escapeHtml(lastRunSnapshot.endingName || "—")}</span></div>
         </div>
       </div>
+    `;
+  }
+
+  function highlightsPanel() {
+    const hl = (state.highlights || []).slice(-8).reverse(); // 最近 8 个
+    if (!hl.length) return "";
+    const ICONS = { main: "⚔", cameo: "🎭", breakthrough: "✨", savior: "⚡" };
+    return `
+      <section class="panel highlights-panel">
+        <h2 class="panel-title">✨ 本局高光时刻</h2>
+        <div class="highlights-grid">
+          ${hl.map(h => `
+            <div class="highlight-card ${h.kind}">
+              <div class="highlight-icon">${ICONS[h.kind] || "·"}</div>
+              <div class="highlight-text">${escapeHtml(h.text)}</div>
+              <div class="highlight-age">${h.age} 岁</div>
+            </div>
+          `).join("")}
+        </div>
+        <button class="primary share-poster-btn" data-action="generate-poster">📸 生成战报海报</button>
+        <div id="posterOutput"></div>
+      </section>
     `;
   }
 
@@ -1611,6 +1635,7 @@
     }
     if (action === "heaven") requestHeaven();
     if (action === "copy-report") copyReport();
+    if (action === "generate-poster") showPoster();
   }
 
   function snapshotForCompare() {
@@ -1737,6 +1762,9 @@
       category: event.tier === "main" ? "fated-main" : "fated-side",
     };
     logLine(`${state.age} 岁`, `【${event.tier === "main" ? "主线" : "支线"}】${event.title}：${option.label}`);
+    // 高光记录：主线全部 + 含动漫角色的支线
+    if (event.tier === "main") recordHighlight("main", `${event.title}·${option.label}`);
+    else if (event.id.startsWith("side:cameo:")) recordHighlight("cameo", `${event.title}`);
     // 主线选项触发 DeepSeek 旁白；支线只在关键节点触发
     if (event.tier === "main") fetchNarrator(event, option);
     if (option.triggersAscension) {
@@ -1830,6 +1858,7 @@
       state.lastResult.changes.push({ label: "境界", value: `${oldRealm} -> ${REALMS[state.realm].name}`, kind: "plus" });
       logLine(`${state.age} 岁`, `你突破到${REALMS[state.realm].name}。天道弹出提示：千百次练习只为这一刻。`);
       flashOverlay("breakthrough");
+      if (state.realm >= 3) recordHighlight("breakthrough", `${state.age}岁突破${REALMS[state.realm].name}`);
     } else {
       state.cultivation = Math.floor(state.cultivation * 0.65);
       const damage = Math.ceil((100 - chance) / 40);
@@ -1852,12 +1881,65 @@
     if (event.leftHanTier?.id === "aftershock") chance *= 0.85;
     if (event.leftHanTier?.id === "body") chance += 0.18;
     if (Math.random() < chance) {
+      // 死亡挽救：优先触发救命手段
+      const savior = pickSavior();
+      if (savior) {
+        applySavior(savior, event);
+        return false;
+      }
       const text = event.deathText || deathTextFor(event.category);
       const reason = pickDeathReason(event.category, event.leftHanTier);
       die(reason, text, event.category);
       return true;
     }
     return false;
+  }
+
+  // 死亡挽救：返回第一个可用救命手段
+  // 记录高光时刻
+  function recordHighlight(kind, text) {
+    if (!state.highlights) state.highlights = [];
+    state.highlights.push({ kind, text, age: state.age });
+    if (state.highlights.length > 12) state.highlights.shift();
+  }
+
+  function pickSavior() {
+    if (!state.stats.usedSaviors) state.stats.usedSaviors = {};
+    const used = state.stats.usedSaviors;
+    if ((state.flags.ring_master || state.flags.ring_contract) && (used.ring || 0) < 3 && state.cultivation >= 15) {
+      return { kind: "ring", cost: 15, name: "戒指老爷爷救场" };
+    }
+    if (state.flags.sys_signed && !used.sys) {
+      return { kind: "sys", cost: 0, name: "系统救命礼包" };
+    }
+    if (state.flags.heaven_amused && !used.heaven) {
+      return { kind: "heaven", cost: 0, name: "天道豁免符" };
+    }
+    if ((state.flags.re_remembers || state.flags.re_faced_doom) && (used.rebirth || 0) < 2) {
+      return { kind: "rebirth", cost: 0, name: "重生者预感闪避" };
+    }
+    if (state.attrs.luck >= 12) {
+      return { kind: "luck", cost: 4, name: "气运庇佑" };
+    }
+    if (state.selectedTalents.includes("t004") && state.attrs.body >= 3) {
+      return { kind: "bone", cost: 5, name: "至尊骨硬扛" };
+    }
+    return null;
+  }
+
+  function applySavior(s, event) {
+    const used = state.stats.usedSaviors;
+    used[s.kind] = (used[s.kind] || 0) + 1;
+    if (s.kind === "ring") state.cultivation = Math.max(0, state.cultivation - s.cost);
+    if (s.kind === "luck") state.attrs.luck -= s.cost;
+    if (s.kind === "bone") state.attrs.body -= s.cost;
+    addTags([`${s.name}救命`]);
+    logLine(`${state.age} 岁`, `⚡ ${s.name} 触发！${event.title} 本该是绝境，但${s.name}替你扛了下来。`);
+    if (state.lastResult) {
+      state.lastResult.savior = `⚡ ${s.name} 救你一命${s.cost ? `（代价：${s.cost}）` : ""}`;
+    }
+    // 高光时刻记录
+    recordHighlight("savior", `${state.age}岁${s.name}救命`);
   }
 
   function checkInstantDeath(moment) {
@@ -2703,6 +2785,143 @@
     }
   }
 
+  // Canvas 生成战报海报
+  function generatePoster() {
+    const W = 540, H = 960;
+    const canvas = document.createElement("canvas");
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext("2d");
+
+    // 背景（仿宣纸+墨色）
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, "#2c2014");
+    bg.addColorStop(0.5, "#1e1812");
+    bg.addColorStop(1, "#0a0706");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // 外框
+    ctx.strokeStyle = "#8b6a3a";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(20, 20, W - 40, H - 40);
+    ctx.strokeStyle = "#f2b544";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(28, 28, W - 56, H - 56);
+
+    ctx.textBaseline = "top";
+    // 标题
+    ctx.font = "bold 38px KaiTi, 楷体, sans-serif";
+    ctx.fillStyle = "#f2b544";
+    ctx.shadowColor = "#000"; ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2;
+    ctx.fillText("修 仙 重 开 模 拟 器", 60, 60);
+    ctx.shadowBlur = 0;
+
+    ctx.font = "16px KaiTi, 楷体, sans-serif";
+    ctx.fillStyle = "#b09870";
+    ctx.fillText("本局战报", 60, 108);
+
+    // 道号 + 寿命大字
+    ctx.fillStyle = "#f4e2a8";
+    ctx.font = "bold 28px KaiTi, 楷体";
+    ctx.fillText(`道号：${state.name || "无名"}`, 60, 150);
+    ctx.font = "22px KaiTi, 楷体";
+    ctx.fillText(`享年 ${state.age} 岁  ·  最高境界 ${realmName()}`, 60, 192);
+
+    // 结局名
+    const ending = state.ending?.name || "剧情收束";
+    ctx.font = "bold 26px KaiTi, 楷体";
+    ctx.fillStyle = "#d33d3d";
+    ctx.fillText(`【${ending}】`, 60, 232);
+
+    // 墓志铭
+    if (state.epitaph) {
+      ctx.font = "italic 14px KaiTi, 楷体";
+      ctx.fillStyle = "#d9c685";
+      wrapText(ctx, state.epitaph, 60, 280, W - 120, 22);
+    }
+
+    // 高光时刻区
+    ctx.font = "bold 20px KaiTi, 楷体";
+    ctx.fillStyle = "#5cc8c0";
+    ctx.fillText("✦ 本局高光时刻 ✦", 60, 360);
+    ctx.font = "14px KaiTi, 楷体";
+    ctx.fillStyle = "#f4e2a8";
+    const hls = (state.highlights || []).slice(-6).reverse();
+    let y = 400;
+    if (hls.length === 0) {
+      ctx.fillStyle = "#888";
+      ctx.fillText("（这一局过得平淡）", 60, y);
+    } else {
+      const ICONS = { main: "⚔", cameo: "🎭", breakthrough: "✨", savior: "⚡" };
+      hls.forEach(h => {
+        ctx.fillStyle = "#f2b544";
+        ctx.fillText(ICONS[h.kind] || "·", 60, y);
+        ctx.fillStyle = "#f4e2a8";
+        ctx.fillText(`${h.age}岁`, 88, y);
+        ctx.fillStyle = "#d9c685";
+        wrapText(ctx, h.text, 138, y, W - 198, 22, 1);
+        y += 32;
+      });
+    }
+
+    // 关键词
+    ctx.font = "bold 18px KaiTi, 楷体";
+    ctx.fillStyle = "#b68cff";
+    ctx.fillText("关键词", 60, 660);
+    ctx.font = "14px KaiTi, 楷体";
+    ctx.fillStyle = "#d9c685";
+    const tags = summaryTags().slice(0, 6).join(" · ");
+    wrapText(ctx, tags, 60, 690, W - 120, 22);
+
+    // 锐评
+    ctx.font = "italic 16px KaiTi, 楷体";
+    ctx.fillStyle = "#fff4bf";
+    wrapText(ctx, `「${oneLineReview()}」`, 60, 770, W - 120, 24);
+
+    // 底部
+    ctx.font = "12px KaiTi, 楷体";
+    ctx.fillStyle = "#888";
+    ctx.fillText("xiuxian-restart.pages.dev", 60, H - 60);
+    ctx.fillStyle = "#b09870";
+    ctx.font = "10px KaiTi";
+    ctx.fillText("（截图分享你的修仙人生）", 60, H - 42);
+
+    return canvas.toDataURL("image/png");
+  }
+
+  function wrapText(ctx, text, x, y, maxW, lineH, maxLines = 4) {
+    const chars = text.split("");
+    let line = "";
+    let lines = 0;
+    for (let i = 0; i < chars.length; i += 1) {
+      const test = line + chars[i];
+      const m = ctx.measureText(test);
+      if (m.width > maxW && line) {
+        ctx.fillText(line, x, y);
+        line = chars[i];
+        y += lineH;
+        lines += 1;
+        if (lines >= maxLines) return;
+      } else {
+        line = test;
+      }
+    }
+    if (line) ctx.fillText(line, x, y);
+  }
+
+  function showPoster() {
+    const dataUrl = generatePoster();
+    const box = $("#posterOutput");
+    if (!box) return;
+    box.innerHTML = `
+      <div class="poster-wrap">
+        <img src="${dataUrl}" alt="本局战报海报" />
+        <p class="poster-hint">长按或右键图片 → 保存图片，分享给道友</p>
+      </div>
+    `;
+    box.querySelector("img").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
   function reportText() {
     return [
       `《修仙重开模拟器》本局战报`,
@@ -2745,6 +2964,7 @@
         <div class="changes">
           ${result.changes.length ? result.changes.map((change) => `<span class="delta ${change.kind}">${escapeHtml(change.label)} ${escapeHtml(String(change.value))}</span>`).join("") : '<span class="delta">无明显变化</span>'}
         </div>
+        ${result.savior ? `<div class="savior-banner">${escapeHtml(result.savior)}</div>` : ""}
         ${showNarrator ? `<div class="narrator-box" id="narratorBox">${escapeHtml(state.lastNarration)}</div>` : ""}
       </section>
     `;

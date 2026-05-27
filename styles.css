@@ -1175,6 +1175,71 @@ button:disabled {
   letter-spacing: 2px;
 }
 
+/* ---------- 新增：高光时刻卡片 ---------- */
+.highlights-panel { border-color: var(--cyan); }
+.highlights-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.highlight-card {
+  display: grid;
+  grid-template-columns: 32px 1fr 50px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #4e4128;
+  background: #15120f;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+.highlight-card.main { border-left: 4px solid var(--gold); }
+.highlight-card.cameo { border-left: 4px solid var(--cyan); }
+.highlight-card.breakthrough { border-left: 4px solid var(--jade); }
+.highlight-card.savior { border-left: 4px solid var(--violet); }
+.highlight-icon { font-size: 20px; text-align: center; }
+.highlight-text { color: #f4e2a8; }
+.highlight-age { color: var(--muted); font-size: 11px; text-align: right; }
+
+.share-poster-btn {
+  width: 100%;
+  font-size: 14px;
+  letter-spacing: 2px;
+  background: linear-gradient(180deg, #2a4a3a 0%, #1a3220 100%);
+  border-color: var(--jade);
+}
+.share-poster-btn:active {
+  background: linear-gradient(180deg, #3a5a4a 0%, #2a4230 100%);
+}
+
+.poster-wrap {
+  margin-top: 12px;
+  text-align: center;
+}
+.poster-wrap img {
+  width: 100%;
+  max-width: 360px;
+  border: 2px solid var(--gold);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+.poster-hint {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* 救命挽救横幅 */
+.result-box .savior-banner {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--violet);
+  background: linear-gradient(90deg, #2a1e3a 0%, #1a1228 100%);
+  color: #d7c8ff;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
 /* ---------- 新增：错过剧情线钩子 ---------- */
 .missed-list {
   display: grid;
