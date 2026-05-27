@@ -1009,6 +1009,7 @@ button:disabled {
   color: #fff2b0;
   font-size: 14px;
   line-height: 1.7;
+  white-space: pre-line;
 }
 
 .fated-event.side .fated-intro {
@@ -1238,6 +1239,31 @@ button:disabled {
   font-size: 13px;
   letter-spacing: 1px;
   text-align: center;
+}
+
+/* ---------- 新增：NPC 故人录 ---------- */
+.npcs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.npc-card {
+  border: 1px solid #4e4128;
+  background: #15120f;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.npc-card.friendly { border-left: 4px solid var(--jade); }
+.npc-card.hostile { border-left: 4px solid var(--red); }
+.npc-card strong {
+  display: block;
+  color: #fff0a8;
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+.npc-card span {
+  color: var(--muted);
+  font-size: 11px;
 }
 
 /* ---------- 新增：错过剧情线钩子 ---------- */

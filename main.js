@@ -807,6 +807,48 @@
       ],
     },
 
+    // ============ 金丹期补充支线（4 条，填充 100-650 岁空白带）============
+    {
+      id: "side:gold:tianjiao", tier: "side", title: "天骄大会的请柬",
+      intro: "你 150 岁，收到天骄大会的金色请柬。三千同辈金丹齐聚，第一名据说能跟元婴前辈论道。",
+      requires: { ageMin: 130, ageMax: 300, realmMin: 3 }, once: true,
+      options: [
+        { label: "全力一战", result: "你打进前十，被一位元婴前辈看中收为关门弟子。三百年后你接班他成了新一代宗主。", effects: { cultivation: 30, fame: 15, attention: 3 }, sets: ["gold_top10"] },
+        { label: "故意藏拙", result: "你 1000 名开外就被淘汰。所有人都以为你是水货，只有你自己知道这是计——后来你低调到化神都没人注意。", effects: { cultivation: 12, luck: 8 }, sets: ["gold_hidden"] },
+        { label: "搅乱比赛", result: "你直接放出本命法宝大闹会场。被全场围攻，但你的名声从此响彻三界——以反派的方式。", effects: { fame: 25, attention: 8, body: -3 }, sets: ["gold_villain"] },
+      ],
+    },
+    {
+      id: "side:gold:vendor", tier: "side", title: "无名贩子",
+      intro: "一个穿粗布的老贩子拦住你：「金丹道友，看一眼这枚锈剑？三十灵石就卖你。」 你掏出灵识扫了一下——这剑似乎不简单。",
+      requires: { ageMin: 100, ageMax: 400, realmMin: 3 }, once: true,
+      options: [
+        { label: "二话不说买下", result: "你买了。回家后剑发出共鸣——这是上古剑修的本命剑。从此你剑法暴涨。", effects: { cultivation: 25, fame: 5 }, sets: ["gold_ancient_sword"] },
+        { label: "压价到十灵石", result: "老贩子叹气：「真识货的人，给你 5 灵石的吧。」 你拿到的是另一柄古剑。", effects: { cultivation: 15, luck: 3 }, sets: ["gold_haggle_sword"] },
+        { label: "怀疑是骗局拒绝", result: "你转身走了。第二天那条街换了人，无人见过那个贩子。后来你才知道，他是个隐世大能在试人。", effects: { insight: 8, luck: -2 }, sets: ["gold_refused_test"] },
+      ],
+    },
+    {
+      id: "side:gold:meditation", tier: "side", title: "百年闭关",
+      intro: "你修为卡瓶颈了。你决定闭关。问题是：闭关多久？",
+      requires: { ageMin: 200, ageMax: 500, realmMin: 3 }, once: true,
+      options: [
+        { label: "闭关 100 年", result: "你出关时世界变了天，新一辈天才已经长大，老仇家已经死光。但你修为终于过了瓶颈。", effects: { cultivation: 40, body: -3, fame: -3 }, sets: ["gold_long_seclusion"] },
+        { label: "闭关 30 年", result: "你打坐三十年，悟出了一点东西。出关时世界还认得你。", effects: { cultivation: 20, insight: 5 }, sets: ["gold_mid_seclusion"] },
+        { label: "不闭关，江湖游历", result: "你出门游山玩水。在某座小山顶遇见一位采药老人，他随口给了你一颗丹药——你瓶颈瞬间破了。", effects: { cultivation: 30, luck: 8, fame: 4 }, sets: ["gold_journey_breakthrough"] },
+      ],
+    },
+    {
+      id: "side:gold:rival_return", tier: "side", title: "宿敌归来",
+      intro: "你 300 岁这年，当年那个跟你比过剑的同辈突然找上门——他比你早一步金丹，这次是来「叙旧」的。",
+      requires: { ageMin: 250, ageMax: 500, realmMin: 3, flags: ["has_rival", "rival_friend"], anyFlag: true }, once: true,
+      options: [
+        { label: "再比一场", result: "你们打了三天三夜。这次你赢了。他笑着告辞：「这辈子有你这个对手，不亏。」", effects: { cultivation: 30, fame: 12 }, sets: ["rival_defeated"] },
+        { label: "请他喝酒话当年", result: "你们喝了三天三夜。临别他把自己一半身家送给你：「以后我替你挡左韩天尊的注视。」", effects: { stones: 50, luck: 10, attention: -3 }, sets: ["rival_ally"] },
+        { label: "假装不认识他", result: "你冷冷说不记得了。他失望走了。三十年后你听说他陨落，留下遗言：「希望他有一天能记起我。」", effects: { fame: -3, insight: 8, luck: -4 }, sets: ["rival_betrayed"] },
+      ],
+    },
+
     // ============ 主动机会主线（破解保守路径锁死）============
     {
       id: "main:opportunity_call", tier: "main", title: "天降机会",
@@ -1044,7 +1086,7 @@
     {
       id: "side:cameo:conan", tier: "side", title: "侦探小学生",
       intro: "你在宗门发生了一桩命案。当所有人都没头绪时，一个戴眼镜的小孩走进来说：「真相只有一个。」",
-      requires: { ageMin: 50, ageMax: 300 }, once: true,
+      requires: { ageMin: 80, ageMax: 300, realmMin: 2 }, once: true,
       options: [
         { label: "把案子交给他", result: "他三个时辰找出真凶——是掌门的师弟。掌门给你跪谢。", effects: { fame: 12, insight: 5 }, sets: ["conan_solved"] },
         { label: "怀疑他是凶手", result: "你直接抓了他。他冷笑：你抓错人了，真凶就在你旁边。你回头一看，旁边的人跑了。", effects: { fame: 3, attention: 2 }, sets: ["conan_suspect"] },
@@ -1074,7 +1116,7 @@
     {
       id: "side:cameo:snoopy", tier: "side", title: "屋顶上的小狗",
       intro: "你某天发现自家屋顶上躺着一只大耳朵白狗。它戴墨镜，仰头看天，似乎在思考人生。",
-      requires: { ageMin: 20, ageMax: 200 }, once: true,
+      requires: { ageMin: 60, ageMax: 400 }, once: true,
       options: [
         { label: "陪它一起躺着", result: "你们躺了三个时辰没说话。临别时它点了点头，留下一根羽毛。你的人生观变了。", effects: { insight: 15, luck: 5 }, sets: ["snoopy_chill"] },
         { label: "给它喂吃的", result: "它接过你的饭团，戴上耳机摇头晃脑。你怀疑这只狗修为比你高。", effects: { luck: 8 }, sets: ["snoopy_fed"] },
@@ -1094,7 +1136,7 @@
     {
       id: "side:cameo:totoro", tier: "side", title: "大耳朵森林之主",
       intro: "你迷路在一座古老森林里。一只灰色大毛球从树洞里探出头，对你打了个不太响的哈欠。",
-      requires: { ageMin: 5, ageMax: 200 }, once: true,
+      requires: { ageMin: 5, ageMax: 60 }, once: true,
       options: [
         { label: "靠它身上睡一觉", result: "你睡了一觉醒来已是第二天清晨，毛球不见了，你身上挂着一片绿叶。叶子带回去种出了灵药。", effects: { body: 3, stones: 8, luck: 5 }, sets: ["totoro_nap"] },
         { label: "请它带你出森林", result: "它叫来了一辆毛茸茸的「猫车」，把你三息送回宗门。", effects: { luck: 8, insight: 3 }, sets: ["totoro_ride"] },
@@ -1240,6 +1282,7 @@
       epitaph: "",
       lastNarration: "",
       highlights: [], // 本局高光时刻 [{kind, text, age}]
+      npcs: {},       // NPC 关系网 {npcId: {name, status, age, intro}}
       stats: {
         leftHanCount: 0,
         leftHanRumors: 0,
@@ -1441,12 +1484,58 @@
     if (state.lastResult) window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  // 天赋专属主线前缀：选了 X 天赋，看到的主线 intro 多一句"私人台词"
+  const TALENT_INTRO_PREFIX = {
+    "main:birth": {
+      t006: "戒指里传来一声老者叹息：「这孩子……是我等的人。」",
+      t009: "你睁眼时脑海里闪过未来画面——这一刻你似乎记得。",
+      t003: "全村人都说没见过这么好看的孩子，远方一道目光扫了过来。",
+      t019: "你出生的瞬间，远方某座山头上一个身影动了一下。",
+      t010: "接生婆说：「这孩子眼神三分凉薄，注定不凡。」",
+      t007: "你出生时不哭不闹，像是已经计算好了不能浪费体力。",
+      t012: "你脑海里弹出一行字：「系统加载中… 1%」",
+      t016: "你哭的时候手里居然攥着一颗灵石——没人知道哪来的。",
+    },
+    "main:first_taste": {
+      t006: "戒指在你手心微微发烫：「这道士……不简单。」",
+      t007: "你下意识算了一下：道士看起来不太行，还是别凑近。",
+      t010: "你眼神三分凉薄看着道士：「你这剑还能不能再快点？」",
+    },
+    "main:test_root": {
+      t001: "你刚走近，珠子就开始发出刺眼强光，长老瞳孔骤缩。",
+      t002: "你拿起珠子，它居然变成五种颜色循环闪烁，连测灵根的工具都懵了。",
+      t006: "戒指里传来：「随便测，灵根不重要。」",
+      t009: "你脑海闪过画面——上一世这测灵根的结果你记得。",
+    },
+    "main:leave_home": {
+      t007: "你算了一下：进宗门要交报名费，做散修能跑路，留下能苟，邪教死太快。",
+      t008: "你想起退婚那家姑娘，下决心要立功成名让她后悔。",
+      t009: "你记得上一世的选择，这一世可以改。",
+    },
+    "main:zh_shadow": {
+      t019: "你的雷达瞬间响起来：左韩天尊就在那里。",
+      t009: "你看见黑影的瞬间脑海闪过：上一世……他也来过。",
+    },
+  };
+
+  function expandTalentIntro(event) {
+    let intro = fillTemplate(event.intro);
+    const map = TALENT_INTRO_PREFIX[event.id];
+    if (map) {
+      for (const t of state.selectedTalents) {
+        if (map[t]) return `「${map[t]}」\n\n${intro}`;
+      }
+    }
+    return intro;
+  }
+
   function renderFatedPanel(event) {
     const tag = event.tier === "main" ? "主线剧情" : "支线剧情";
+    const intro = expandTalentIntro(event);
     return `
       <div class="fated-event ${event.tier}">
         <div class="fated-tag">${tag} · ${escapeHtml(event.title)}</div>
-        <p class="fated-intro">${escapeHtml(fillTemplate(event.intro))}</p>
+        <p class="fated-intro">${escapeHtml(intro)}</p>
         <div class="choice-list">
           ${event.options.map((opt, i) => `
             <button class="choice-card fated-option" data-fated="${event.id}|${i}">
@@ -1487,6 +1576,7 @@
         <div class="tag-list">${summaryTags().map((tag) => `<span class="tag ${tagClass(tag)}">${escapeHtml(tag)}</span>`).join("")}</div>
       </section>
       ${catalogPanel()}
+      ${npcsPanel()}
       ${missedRoutesPanel()}
       ${timelinePanel()}
       <section class="panel">
@@ -1534,6 +1624,24 @@
         </div>
         <button class="primary share-poster-btn" data-action="generate-poster">📸 生成战报海报</button>
         <div id="posterOutput"></div>
+      </section>
+    `;
+  }
+
+  function npcsPanel() {
+    const list = deriveNpcs();
+    if (!list.length) return "";
+    return `
+      <section class="panel">
+        <h2 class="panel-title">本局故人录</h2>
+        <div class="npcs-grid">
+          ${list.map(n => `
+            <div class="npc-card ${n.friendly ? "friendly" : "hostile"}">
+              <strong>${escapeHtml(n.name)}</strong>
+              <span>${escapeHtml(n.status)}</span>
+            </div>
+          `).join("")}
+        </div>
       </section>
     `;
   }
@@ -1901,6 +2009,36 @@
     if (!state.highlights) state.highlights = [];
     state.highlights.push({ kind, text, age: state.age });
     if (state.highlights.length > 12) state.highlights.shift();
+  }
+
+  // NPC 关系网：基于 flag 推导 NPC 状态
+  const NPC_DEFS = [
+    { id: "ring_master", name: "戒指里的老爷爷", aliveFlag: ["ring_master","ring_contract","ring_enslaved","ring_resisted"], hostileFlag: ["ring_taken"] },
+    { id: "doulu", name: "你的道侣", aliveFlag: ["has_doulu"], hostileFlag: ["mourned_doulu","avenged_doulu","waited_doulu"] },
+    { id: "rival", name: "你的宿敌", aliveFlag: ["has_rival","rival_friend","rival_ally","rival_defeated"], hostileFlag: ["coward_rival","rival_betrayed"] },
+    { id: "oldman_helped", name: "云游老者（你帮过的）", aliveFlag: ["helped_oldman","karma_returned","karma_brother"] },
+    { id: "oldman_robbed", name: "云游老者（你抢过的）", hostileFlag: ["robbed_oldman","karma_punished","karma_destroyed"] },
+    { id: "rebirth_friend", name: "上一世的故人", aliveFlag: ["re_friend_enemy"], hostileFlag: ["re_killed_enemy"] },
+    { id: "zh", name: "左韩天尊", aliveFlag: ["zh_drank_with","zr_endorsed","zr_friend","zh_respect_paid"], hostileFlag: ["zh_taunted","zh_fool_rushed"] },
+    { id: "divorce_ex", name: "退婚的那家姑娘", aliveFlag: ["div_reconciled","div_let_go"], hostileFlag: ["div_face_slapped","div_framed_it"] },
+    { id: "loyal_disciple", name: "你的忠心弟子", aliveFlag: ["loyal_disciple","mystery_disciple"], hostileFlag: ["greedy_disciple"] },
+  ];
+
+  function deriveNpcs() {
+    const result = [];
+    NPC_DEFS.forEach((def) => {
+      const aliveHit = (def.aliveFlag || []).find(f => state.flags[f]);
+      const hostileHit = (def.hostileFlag || []).find(f => state.flags[f]);
+      if (aliveHit || hostileHit) {
+        result.push({
+          name: def.name,
+          status: hostileHit ? "结怨/离散" : "在世/有缘",
+          trigger: aliveHit || hostileHit,
+          friendly: !!aliveHit,
+        });
+      }
+    });
+    return result;
   }
 
   function pickSavior() {
@@ -3108,6 +3246,12 @@
   }
 
   function nextAgeSpan() {
+    // 童年期压缩：0-3 岁 2 年一跳，3-10 岁 1-2 年一跳，10-18 岁 1 年一跳
+    if (state.realm === 0) {
+      if (state.age < 3) return 2;
+      if (state.age < 10) return randInt(1, 2);
+      return 1;
+    }
     const [min, max] = REALMS[state.realm].span;
     return randInt(min, max);
   }
