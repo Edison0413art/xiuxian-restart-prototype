@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/heaven-commentary", "destination": "/api/heaven-commentary" },
+    { "source": "/api/epitaph", "destination": "/api/epitaph" },
+    { "source": "/api/narrator", "destination": "/api/narrator" }
+  ]
+}
